@@ -26,7 +26,7 @@ Python Boilerplate contains all the boilerplate you need to create a Python pack
 Features
 --------
 
-* TODO
+* 15/12/2023 - Added baseline functionality of calculation of first year commission
 
 Credits
 -------
