@@ -43,15 +43,15 @@ class MIC:
             print("Error, please check FYC amount")
 
     def cal_commission(self):
-        self.bass_commission_percentage = self.match_fyc(self.FYC)
+        self.base_commission_percentage = self.match_fyc(self.FYC)
         self.commission_percentage_addition = self.agent_level_addition.get(
             self.agent_level, 0
         )
         self.total_commission_percentage = round(
             (
-                self.bass_commission_percentage
+                self.base_commission_percentage
                 + self.commission_percentage_addition
-                if self.bass_commission_percentage > 0
+                if self.base_commission_percentage > 0
                 else 0
             ),
             2,
