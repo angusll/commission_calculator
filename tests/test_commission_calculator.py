@@ -1,24 +1,56 @@
 #!/usr/bin/env python
 
 """Tests for `commission_calculator` package."""
-
+from loguru import logger
 import pytest
+from ..src.models import (
+    AgentLevelAdditions,
+    BaseCommissionPercent,
+    AnnualCommissionBonus,
+)
+from ..src.core import MIC, YIC, calculate_rolling_commission, cal_annual_sales
 
 
-from commission_calculator import commission_calculator
+@pytest.mark.parametrize(
+    "fyc_percentage",
+    [
+        (20000, 0),
+        (30000, 0.2),
+        (50000, 0.25),
+        (66000, 0.3),
+        (88000, 0.325),
+        (110000, 0.375),
+    ],
+)
+@pytest.mark.parametrize("level", ["NONE", "MFP", "SMFP", "EMFP"])
+def test_mic(fyc_percentage, level):
+    percentage = list(BaseCommissionPercent().model_dump().values())
+    fyc, percentage = fyc_percentage
+    levels = AgentLevelAdditions()
+    agent_level_addition = levels.model_dump()
+    mic = MIC(FYC=fyc, agent_level=level)
+    com = mic.cal_commission()
+
+    com_addition = agent_level_addition.get(level, 0)
+    expected_total_commission_percentage = round(
+        (percentage + com_addition if percentage > 0 else 0),
+        4,
+    )
+    assert com == fyc * expected_total_commission_percentage
 
 
-@pytest.fixture
-def response():
-    """Sample pytest fixture.
-
-    See more at: http://doc.pytest.org/en/latest/fixture.html
-    """
-    # import requests
-    # return requests.get('https://github.com/audreyr/cookiecutter-pypackage')
-
-
-def test_content(response):
-    """Sample pytest test function with the pytest fixture as an argument."""
-    # from bs4 import BeautifulSoup
-    # assert 'GitHub' in BeautifulSoup(response.content).title.string
+@pytest.mark.parametrize(
+    "annual_sales_percentage",
+    [
+        (100000, 0),
+        (137500, 0.17),
+        (275000, 0.2),
+        (385000, 0.25),
+        (495000, 0.275),
+    ],
+)
+def test_yic(annual_sales_percentage):
+    annual_sales, percentage = annual_sales_percentage
+    yic = YIC(annual_sales=annual_sales)
+    yic.get_annual_bonus()
+    assert yic.annual_bonus == annual_sales * percentage

@@ -1,6 +1,5 @@
 import pandas as pd
-from pydantic import BaseModel
-from models import (
+from .models import (
     AgentLevelAdditions,
     BaseCommissionPercent,
     AnnualCommissionBonus,
@@ -14,35 +13,14 @@ class MIC:
         PSY_19M: float = 0.9,
         agent_level: str = "N/A",
         agent_level_addition: dict = AgentLevelAdditions().model_dump(),
-        BaseCommissionPercent: BaseModel = BaseCommissionPercent(),
+        BaseCommissionPer: BaseCommissionPercent = BaseCommissionPercent(),
     ):
         self.agent_level = agent_level
         self.agent_level_addition = agent_level_addition
         self.FYC = FYC
         self.PSY_19M = PSY_19M
-        self.BaseCommissionPercent = BaseCommissionPercent
+        self.BaseCommissionPer = BaseCommissionPer
 
-    def match_fyc(self, fyc_amount):
-        """
-        Assume 90% 19M PSY
-        """
-        assert isinstance(fyc_amount, int) | isinstance(fyc_amount, float)
-        if fyc_amount < 30000:
-            return self.BaseCommissionPercent.less_than_30k
-        elif fyc_amount in range(30000, 49999):
-            return self.BaseCommissionPercent.between_30k_50k
-        elif fyc_amount in range(50000, 65999):
-            return self.BaseCommissionPercent.between_50k_66k
-        elif fyc_amount in range(66000, 87999):
-            return self.BaseCommissionPercent.between_66k_88k
-        elif fyc_amount in range(88000, 109999):
-            return self.BaseCommissionPercent.between_88k_109k
-        elif fyc_amount >= 110000:
-            return self.BaseCommissionPercent.above_110k
-        else:
-            print("Error, please check FYC amount")
-
-    def cal_commission(self):
         self.base_commission_percentage = self.match_fyc(self.FYC)
         self.commission_percentage_addition = self.agent_level_addition.get(
             self.agent_level, 0
@@ -54,8 +32,30 @@ class MIC:
                 if self.base_commission_percentage > 0
                 else 0
             ),
-            2,
+            4,
         )
+
+    def match_fyc(self, fyc_amount):
+        """
+        Assume 90% 19M PSY
+        """
+        assert isinstance(fyc_amount, int) | isinstance(fyc_amount, float)
+        if fyc_amount < 30000:
+            return self.BaseCommissionPer.less_than_30k
+        elif fyc_amount in range(30000, 49999):
+            return self.BaseCommissionPer.between_30k_50k
+        elif fyc_amount in range(50000, 65999):
+            return self.BaseCommissionPer.between_50k_66k
+        elif fyc_amount in range(66000, 87999):
+            return self.BaseCommissionPer.between_66k_88k
+        elif fyc_amount in range(88000, 109999):
+            return self.BaseCommissionPer.between_88k_109k
+        elif fyc_amount >= 110000:
+            return self.BaseCommissionPer.above_110k
+        else:
+            print("Error, please check FYC amount")
+
+    def cal_commission(self):
         self.commission = self.FYC * self.total_commission_percentage
         return self.commission
 
@@ -69,28 +69,27 @@ class YIC:
     def get_annual_bonus(self):
         if self.annual_sales in range(self.intervals[0], self.intervals[1]):
             self.annual_bonus = self.annual_sales * (
-                1 + self.annual_commission_bonus.less_than_137k
+                self.annual_commission_bonus.less_than_137k
             )
         elif self.annual_sales in range(self.intervals[1], self.intervals[2]):
             self.annual_bonus = self.annual_sales * (
-                1 + self.annual_commission_bonus.between_137k_275k
+                self.annual_commission_bonus.between_137k_275k
             )
         elif self.annual_sales in range(self.intervals[2], self.intervals[3]):
             self.annual_bonus = self.annual_sales * (
-                1 + self.annual_commission_bonus.between_275k_385
+                self.annual_commission_bonus.between_275k_385
             )
         elif self.annual_sales in range(self.intervals[3], self.intervals[4]):
             self.annual_bonus = self.annual_sales * (
-                1 + self.annual_commission_bonus.between_385k_495k
+                self.annual_commission_bonus.between_385k_495k
             )
         elif self.annual_sales >= self.intervals[4]:
             self.annual_bonus = self.annual_sales * (
-                1 + self.annual_commission_bonus.above_495k
+                self.annual_commission_bonus.above_495k
             )
         else:
             print("Error, please check annual sales")
             self.annual_bonus = 0
-        return self.annual_bonus
 
 
 def cal_quarterly_commission(sales, agent_level: AgentLevelAdditions):
