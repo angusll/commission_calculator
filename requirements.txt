@@ -1,5 +1,5 @@
 numpy
-panadas
+pandas
 pydantic
 streamlit
 flake8==3.7.8
