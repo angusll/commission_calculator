@@ -25,7 +25,7 @@ Python Boilerplate contains all the boilerplate you need to create a Python pack
 
 Features
 --------
-
+* 19/12/2023 - Added Renewal commission
 * 15/12/2023 - Added baseline functionality of calculation of first year commission
 
 Credits

@@ -22,19 +22,6 @@ for i in range(1, 6):
         df_template, key=i
     )
 
-
-# st.sidebar.subheader("Year 2 Sales Data")
-# edited_df2 = st.sidebar.data_editor(df_template, key=1)
-
-# st.sidebar.subheader("Year 3 Sales Data")
-# edited_df3 = st.sidebar.data_editor(df_template, key=2)
-
-# st.sidebar.subheader("Year 4 Sales Data")
-# edited_df4 = st.sidebar.data_editor(df_template, key=3)
-
-# st.sidebar.subheader("Year 5 Sales Data")
-# edited_df5 = st.sidebar.data_editor(df_template, key=4)
-
 if st.sidebar.button(key="calculate", label="Calculate"):
     st.write(f"Agent level: {agent_level}")
     yearly_sales = {}
