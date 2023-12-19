@@ -1,14 +1,9 @@
 #!/usr/bin/env python
 
 """Tests for `commission_calculator` package."""
-from loguru import logger
 import pytest
-from ..src.models import (
-    AgentLevelAdditions,
-    BaseCommissionPercent,
-    AnnualCommissionBonus,
-)
-from ..src.core import MIC, YIC, calculate_rolling_commission, cal_annual_sales
+from ..src.core import MIC, YIC
+from ..src.models import AgentLevelAdditions, BaseCommissionPercent
 
 
 @pytest.mark.parametrize(
@@ -28,7 +23,7 @@ def test_mic(fyc_percentage, level):
     fyc, percentage = fyc_percentage
     levels = AgentLevelAdditions()
     agent_level_addition = levels.model_dump()
-    mic = MIC(FYC=fyc, agent_level=level)
+    mic = MIC(fyc=fyc, agent_level=level)
     com = mic.cal_commission()
 
     com_addition = agent_level_addition.get(level, 0)
