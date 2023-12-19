@@ -1,9 +1,10 @@
 import pandas as pd
-from .models import (
+from models import (
     AgentLevelAdditions,
     BaseCommissionPercent,
     AnnualCommissionBonus,
 )
+from loguru import logger
 
 
 class MIC:
@@ -61,7 +62,7 @@ class MIC:
 
 
 class YIC:
-    def __init__(self, annual_sales):
+    def __init__(self, annual_sales: int):
         self.annual_sales = annual_sales
         self.intervals = [0, 137500, 275000, 385000, 495000]
         self.annual_commission_bonus = AnnualCommissionBonus()
@@ -90,6 +91,26 @@ class YIC:
         else:
             print("Error, please check annual sales")
             self.annual_bonus = 0
+        self.annual_bonus = round(self.annual_bonus, 2)
+
+
+class Renewal:
+    def __init__(self, yearly_sales: dict):
+        self.yearly_sales = yearly_sales
+        self.renewal_bonus = 0.15
+        self.renewal_bonus_dict = {}
+        for i, (_, v) in enumerate(yearly_sales.items()):
+            if i > 0:
+                self.fyc = v
+                self.renewal_commission = v * self.renewal_bonus
+                self.renewal_bonus_dict[
+                    f"Year {i+1} renewal bonus"
+                ] = self.renewal_commission
+            else:
+                self.renewal_bonus_dict[f"Year {i+1} renewal bonus"] = 0
+
+    def get_renewal_commission(self):
+        return self.renewal_bonus_dict
 
 
 def cal_quarterly_commission(sales, agent_level: AgentLevelAdditions):
