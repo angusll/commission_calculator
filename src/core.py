@@ -1,40 +1,35 @@
 import pandas as pd
-from models import (
-    AgentLevelAdditions,
-    BaseCommissionPercent,
-    AnnualCommissionBonus,
-)
-from loguru import logger
+
+
+from models import AgentLevelAdditions, AnnualCommissionBonus, BaseCommissionPercent
 
 
 class MIC:
     def __init__(
         self,
-        FYC: int,
-        PSY_19M: float = 0.9,
+        fyc: int,
+        psy_19m: float = 0.9,
         agent_level: str = "N/A",
         agent_level_addition: dict = AgentLevelAdditions().model_dump(),
-        BaseCommissionPer: BaseCommissionPercent = BaseCommissionPercent(),
+        basecommissionpercentage: BaseCommissionPercent = BaseCommissionPercent(),
     ):
         self.agent_level = agent_level
         self.agent_level_addition = agent_level_addition
-        self.FYC = FYC
-        self.PSY_19M = PSY_19M
-        self.BaseCommissionPer = BaseCommissionPer
+        self.fyc = fyc
+        self.psy_19m = psy_19m
+        self.basecommissionpercentage = basecommissionpercentage
 
-        self.base_commission_percentage = self.match_fyc(self.FYC)
-        self.commission_percentage_addition = self.agent_level_addition.get(
-            self.agent_level, 0
-        )
+        self.base_commission_percentage = self.match_fyc(self.fyc)
+        self.commission_percentage_addition = self.agent_level_addition.get(self.agent_level, 0)
         self.total_commission_percentage = round(
             (
-                self.base_commission_percentage
-                + self.commission_percentage_addition
+                self.base_commission_percentage + self.commission_percentage_addition
                 if self.base_commission_percentage > 0
                 else 0
             ),
             4,
         )
+        self.commission = self.fyc * self.total_commission_percentage
 
     def match_fyc(self, fyc_amount):
         """
@@ -42,22 +37,21 @@ class MIC:
         """
         assert isinstance(fyc_amount, int) | isinstance(fyc_amount, float)
         if fyc_amount < 30000:
-            return self.BaseCommissionPer.less_than_30k
+            return self.basecommissionpercentage.less_than_30k
         elif fyc_amount in range(30000, 49999):
-            return self.BaseCommissionPer.between_30k_50k
+            return self.basecommissionpercentage.between_30k_50k
         elif fyc_amount in range(50000, 65999):
-            return self.BaseCommissionPer.between_50k_66k
+            return self.basecommissionpercentage.between_50k_66k
         elif fyc_amount in range(66000, 87999):
-            return self.BaseCommissionPer.between_66k_88k
+            return self.basecommissionpercentage.between_66k_88k
         elif fyc_amount in range(88000, 109999):
-            return self.BaseCommissionPer.between_88k_109k
+            return self.basecommissionpercentage.between_88k_109k
         elif fyc_amount >= 110000:
-            return self.BaseCommissionPer.above_110k
+            return self.basecommissionpercentage.above_110k
         else:
             print("Error, please check FYC amount")
 
     def cal_commission(self):
-        self.commission = self.FYC * self.total_commission_percentage
         return self.commission
 
 
@@ -66,32 +60,24 @@ class YIC:
         self.annual_sales = annual_sales
         self.intervals = [0, 137500, 275000, 385000, 495000]
         self.annual_commission_bonus = AnnualCommissionBonus()
+        self.annual_bonus = self.get_annual_bonus()
 
     def get_annual_bonus(self):
         if self.annual_sales in range(self.intervals[0], self.intervals[1]):
-            self.annual_bonus = self.annual_sales * (
-                self.annual_commission_bonus.less_than_137k
-            )
+            annual_bonus = self.annual_sales * (self.annual_commission_bonus.less_than_137k)
         elif self.annual_sales in range(self.intervals[1], self.intervals[2]):
-            self.annual_bonus = self.annual_sales * (
-                self.annual_commission_bonus.between_137k_275k
-            )
+            annual_bonus = self.annual_sales * (self.annual_commission_bonus.between_137k_275k)
         elif self.annual_sales in range(self.intervals[2], self.intervals[3]):
-            self.annual_bonus = self.annual_sales * (
-                self.annual_commission_bonus.between_275k_385
-            )
+            annual_bonus = self.annual_sales * (self.annual_commission_bonus.between_275k_385)
         elif self.annual_sales in range(self.intervals[3], self.intervals[4]):
-            self.annual_bonus = self.annual_sales * (
-                self.annual_commission_bonus.between_385k_495k
-            )
+            annual_bonus = self.annual_sales * (self.annual_commission_bonus.between_385k_495k)
         elif self.annual_sales >= self.intervals[4]:
-            self.annual_bonus = self.annual_sales * (
-                self.annual_commission_bonus.above_495k
-            )
+            annual_bonus = self.annual_sales * (self.annual_commission_bonus.above_495k)
         else:
             print("Error, please check annual sales")
-            self.annual_bonus = 0
-        self.annual_bonus = round(self.annual_bonus, 2)
+            annual_bonus = 0
+        annual_bonus = round(self.annual_bonus, 2)
+        return annual_bonus
 
 
 class Renewal:
@@ -103,9 +89,7 @@ class Renewal:
             if i > 0:
                 self.fyc = v
                 self.renewal_commission = v * self.renewal_bonus
-                self.renewal_bonus_dict[
-                    f"Year {i+1} renewal bonus"
-                ] = self.renewal_commission
+                self.renewal_bonus_dict[f"Year {i+1} renewal bonus"] = self.renewal_commission
             else:
                 self.renewal_bonus_dict[f"Year {i+1} renewal bonus"] = 0
 
@@ -118,27 +102,19 @@ def cal_quarterly_commission(sales, agent_level: AgentLevelAdditions):
     for month, _ in enumerate(sales):
         if month in range(2, 3):
             quaterly_sales = sum(sales[:3])
-            commission = MIC(
-                FYC=quaterly_sales, agent_level=agent_level
-            ).cal_commission()
+            commission = MIC(fyc=quaterly_sales, agent_level=agent_level).cal_commission()
             com.append(commission)
         elif month in range(3, 6):
             quaterly_sales = sum(sales[4:7])
-            commission = MIC(
-                FYC=quaterly_sales, agent_level=agent_level
-            ).cal_commission()
+            commission = MIC(fyc=quaterly_sales, agent_level=agent_level).cal_commission()
             com.append(commission)
         elif month in range(6, 9):
             quaterly_sales = sum(sales[7:10])
-            commission = MIC(
-                FYC=quaterly_sales, agent_level=agent_level
-            ).cal_commission()
+            commission = MIC(fyc=quaterly_sales, agent_level=agent_level).cal_commission()
             com.append(commission)
         elif month in range(9, 12):
             quaterly_sales = sum(sales[10:13])
-            commission = MIC(
-                FYC=quaterly_sales, agent_level=agent_level
-            ).cal_commission()
+            commission = MIC(fyc=quaterly_sales, agent_level=agent_level).cal_commission()
             com.append(commission)
         else:
             com.append(0)
@@ -151,9 +127,7 @@ def calculate_rolling_sum(lst):
     return rolling_sum.tolist()
 
 
-def calculate_rolling_commission(
-    sales_df: pd.DataFrame, agent_level: str
-) -> pd.DataFrame:
+def calculate_rolling_commission(sales_df: pd.DataFrame, agent_level: str) -> pd.DataFrame:
     sales_df["rolling_sales"] = calculate_rolling_sum(sales_df.sales)
     sales_df.fillna(0, inplace=True)
     sales_df["rolling_commission"] = cal_quarterly_commission(
