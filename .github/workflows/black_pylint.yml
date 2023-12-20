@@ -43,4 +43,4 @@ jobs:
         pip install .
     - name: Test
       run: |
-        pytest  
+        python -m pytest tests
