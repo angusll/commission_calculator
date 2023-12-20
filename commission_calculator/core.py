@@ -92,11 +92,11 @@ class Renewal:
         self.yearly_sales = yearly_sales
         self.renewal_bonus = 0.15
         self.renewal_bonus_dict = {}
-        for i, (_, v) in enumerate(yearly_sales.items()):
+        logger.debug(yearly_sales.items())
+        for i in range(len(yearly_sales)):
             if i > 0:
-                self.fyc = v
-                self.renewal_commission = v * self.renewal_bonus
-                self.renewal_bonus_dict[f"Year {i+1} renewal bonus"] = self.renewal_commission
+                renewal_commission = yearly_sales[i - 1] * self.renewal_bonus
+                self.renewal_bonus_dict[f"Year {i+1} renewal bonus"] = renewal_commission
             else:
                 self.renewal_bonus_dict[f"Year {i+1} renewal bonus"] = 0
 
@@ -104,24 +104,11 @@ class Renewal:
         return self.renewal_bonus_dict
 
 
-def cal_quarterly_commission(sales, agent_level: AgentLevelAdditions):
+def cal_quarterly_commission(sales: list, agent_level: AgentLevelAdditions):
     com = []
-    for month, _ in enumerate(sales):
-        if month in range(2, 3):
-            quaterly_sales = sum(sales[:3])
-            commission = MIC(fyc=quaterly_sales, agent_level=agent_level).cal_commission()
-            com.append(commission)
-        elif month in range(3, 6):
-            quaterly_sales = sum(sales[4:7])
-            commission = MIC(fyc=quaterly_sales, agent_level=agent_level).cal_commission()
-            com.append(commission)
-        elif month in range(6, 9):
-            quaterly_sales = sum(sales[7:10])
-            commission = MIC(fyc=quaterly_sales, agent_level=agent_level).cal_commission()
-            com.append(commission)
-        elif month in range(9, 12):
-            quaterly_sales = sum(sales[10:13])
-            commission = MIC(fyc=quaterly_sales, agent_level=agent_level).cal_commission()
+    for i in range(len(sales)):
+        if i > 1:  # quarter sales starts at month 3
+            commission = MIC(fyc=sales[i], agent_level=agent_level).cal_commission()
             com.append(commission)
         else:
             com.append(0)
@@ -131,6 +118,7 @@ def cal_quarterly_commission(sales, agent_level: AgentLevelAdditions):
 def calculate_rolling_sum(lst):
     series = pd.Series(lst)
     rolling_sum = series.rolling(window=3).sum()
+    rolling_sum.fillna(0, inplace=True)
     return rolling_sum.tolist()
 
 
