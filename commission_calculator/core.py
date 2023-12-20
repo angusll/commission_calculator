@@ -106,9 +106,9 @@ class Renewal:
 
 def cal_quarterly_commission(sales: list, agent_level: AgentLevelAdditions):
     com = []
-    for i in range(len(sales)):
+    for i, sale in enumerate(sales):
         if i > 1:  # quarter sales starts at month 3
-            commission = MIC(fyc=sales[i], agent_level=agent_level).cal_commission()
+            commission = MIC(fyc=sale, agent_level=agent_level).cal_commission()
             com.append(commission)
         else:
             com.append(0)
