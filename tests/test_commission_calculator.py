@@ -2,8 +2,8 @@
 
 """Tests for `commission_calculator` package."""
 import pytest
-from core import MIC, YIC
-from models import AgentLevelAdditions, BaseCommissionPercent
+from commission_calculator.core import MIC, YIC
+from commission_calculator.models import AgentLevelAdditions, BaseCommissionPercent
 
 
 @pytest.mark.parametrize(

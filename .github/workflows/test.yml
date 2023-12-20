@@ -1,6 +1,0 @@
-name: PyTest
-on: push
-
-jobs:
-  
-
