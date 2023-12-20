@@ -25,5 +25,5 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         black --diff --check $(git ls-files 'src/*.py')
-        pylint $(git ls-files 'src/*.py')
+        pylint --rcfile=.pylintrc $(git ls-files 'src/*.py')
         
