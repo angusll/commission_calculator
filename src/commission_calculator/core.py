@@ -1,7 +1,7 @@
 import pandas as pd
 from loguru import logger
 
-from models import AgentLevelAdditions, AnnualCommissionBonus, BaseCommissionPercent
+from .models import AgentLevelAdditions, AnnualCommissionBonus, BaseCommissionPercent
 
 
 class MIC:
