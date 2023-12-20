@@ -1,4 +1,4 @@
-name: black&pylint
+name: CI
 
 on: [push]
 
