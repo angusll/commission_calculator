@@ -38,9 +38,7 @@ setup(
     include_package_data=True,
     keywords="commission_calculator",
     name="commission_calculator",
-    packages=find_packages(
-        include=["commission_calculator", "commission_calculator.*"]
-    ),
+    packages=find_packages(include=["commission_calculator", "commission_calculator.*"]),
     test_suite="tests",
     tests_require=test_requirements,
     url="https://github.com/angusll/commission_calculator",
