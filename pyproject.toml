@@ -11,3 +11,8 @@ include_trailing_comma = false
 
 [tool.pylint.format]
 max-line-length = 100
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
