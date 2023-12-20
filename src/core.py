@@ -1,5 +1,5 @@
 import pandas as pd
-
+from loguru import logger
 
 from models import AgentLevelAdditions, AnnualCommissionBonus, BaseCommissionPercent
 
@@ -37,19 +37,26 @@ class MIC:
         """
         assert isinstance(fyc_amount, int) | isinstance(fyc_amount, float)
         if fyc_amount < 30000:
-            return self.basecommissionpercentage.less_than_30k
+            base_commission_percentage = self.basecommissionpercentage.less_than_30k
+
         elif fyc_amount in range(30000, 49999):
-            return self.basecommissionpercentage.between_30k_50k
+            base_commission_percentage = self.basecommissionpercentage.between_30k_50k
+
         elif fyc_amount in range(50000, 65999):
-            return self.basecommissionpercentage.between_50k_66k
+            base_commission_percentage = self.basecommissionpercentage.between_50k_66k
+
         elif fyc_amount in range(66000, 87999):
-            return self.basecommissionpercentage.between_66k_88k
+            base_commission_percentage = self.basecommissionpercentage.between_66k_88k
+
         elif fyc_amount in range(88000, 109999):
-            return self.basecommissionpercentage.between_88k_109k
+            base_commission_percentage = self.basecommissionpercentage.between_88k_109k
+
         elif fyc_amount >= 110000:
-            return self.basecommissionpercentage.above_110k
+            base_commission_percentage = self.basecommissionpercentage.above_110k
         else:
-            print("Error, please check FYC amount")
+            logger.error("Error, please check fyc_amount")
+            base_commission_percentage = None
+        return base_commission_percentage
 
     def cal_commission(self):
         return self.commission
@@ -60,24 +67,24 @@ class YIC:
         self.annual_sales = annual_sales
         self.intervals = [0, 137500, 275000, 385000, 495000]
         self.annual_commission_bonus = AnnualCommissionBonus()
-        self.annual_bonus = self.get_annual_bonus()
+        self.annual_bonus = 0
 
     def get_annual_bonus(self):
         if self.annual_sales in range(self.intervals[0], self.intervals[1]):
-            annual_bonus = self.annual_sales * (self.annual_commission_bonus.less_than_137k)
+            self.annual_bonus = self.annual_sales * (self.annual_commission_bonus.less_than_137k)
         elif self.annual_sales in range(self.intervals[1], self.intervals[2]):
-            annual_bonus = self.annual_sales * (self.annual_commission_bonus.between_137k_275k)
+            self.annual_bonus = self.annual_sales * (self.annual_commission_bonus.between_137k_275k)
         elif self.annual_sales in range(self.intervals[2], self.intervals[3]):
-            annual_bonus = self.annual_sales * (self.annual_commission_bonus.between_275k_385)
+            self.annual_bonus = self.annual_sales * (self.annual_commission_bonus.between_275k_385)
         elif self.annual_sales in range(self.intervals[3], self.intervals[4]):
-            annual_bonus = self.annual_sales * (self.annual_commission_bonus.between_385k_495k)
+            self.annual_bonus = self.annual_sales * (self.annual_commission_bonus.between_385k_495k)
         elif self.annual_sales >= self.intervals[4]:
-            annual_bonus = self.annual_sales * (self.annual_commission_bonus.above_495k)
+            self.annual_bonus = self.annual_sales * (self.annual_commission_bonus.above_495k)
         else:
             print("Error, please check annual sales")
-            annual_bonus = 0
-        annual_bonus = round(self.annual_bonus, 2)
-        return annual_bonus
+            self.annual_bonus = 0
+        self.annual_bonus = round(self.annual_bonus, 2)
+        return self.annual_bonus
 
 
 class Renewal:
