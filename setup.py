@@ -30,7 +30,7 @@ if __name__ == "__main__":
         include_package_data=True,
         keywords="commission_calculator",
         name="commission_calculator",
-        packages=find_packages(include=["src/commission_calculator"], exclude=["test"]),
+        packages=find_packages(include=["commission_calculator"], exclude=["test"]),
         url="https://github.com/angusll/commission_calculator",
         version="0.1.0",
         zip_safe=False,

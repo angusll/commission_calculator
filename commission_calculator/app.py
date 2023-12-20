@@ -1,8 +1,8 @@
 import pandas as pd
 import streamlit as st
 
-from .core import YIC, Renewal, cal_annual_sales, calculate_rolling_commission
-from .models import AgentLevelAdditions
+from core import YIC, Renewal, cal_annual_sales, calculate_rolling_commission
+from models import AgentLevelAdditions
 
 agent_level = AgentLevelAdditions()
 st.title("Comission Scheme")
