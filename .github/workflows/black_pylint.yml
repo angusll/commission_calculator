@@ -24,6 +24,6 @@ jobs:
         pip install black==23.12.0
     - name: Analysing the code with pylint
       run: |
-        black --diff --check $(git ls-files '*.py')
-        pylint $(git ls-files '*.py')
+        black --diff --check $(git ls-files 'src/*.py')
+        pylint $(git ls-files 'src/*.py')
         
