@@ -92,7 +92,6 @@ class Renewal:
         self.yearly_sales = yearly_sales
         self.renewal_bonus = 0.15
         self.renewal_bonus_dict = {}
-        logger.debug(yearly_sales.items())
         for i in range(len(yearly_sales)):
             if i > 0:
                 renewal_commission = yearly_sales[i - 1] * self.renewal_bonus
