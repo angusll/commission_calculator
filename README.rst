@@ -25,6 +25,7 @@ Python Boilerplate contains all the boilerplate you need to create a Python pack
 
 Features
 --------
+* 03/01/2024 - Added Github actions Docker build workflow 
 * 20/12/2023 - Added Github actions CI workflow 
 * 19/12/2023 - Added Renewal commission
 * 15/12/2023 - Added baseline functionality of calculation of first year commission
