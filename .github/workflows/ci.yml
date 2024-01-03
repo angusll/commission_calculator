@@ -46,6 +46,7 @@ jobs:
         pytest test
 
   publish-docker-image:
+    needs: test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -55,7 +56,7 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.PUBLISH_TOKEN }}
-    - name: Build the hello-docker Docker image
+    - name: Build Docker image
       run: |
             docker build . -t ghcr.io/angusll/commission_calculator:latest
             docker push ghcr.io/angusll/commission_calculator:latest
