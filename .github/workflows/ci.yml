@@ -44,3 +44,18 @@ jobs:
     - name: Test
       run: |
         pytest test
+
+  publish-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.PUBLISH_TOKEN }}
+    - name: Build the hello-docker Docker image
+      run: |
+            docker build . -t ghcr.io/angusll/commission_calculator:latest
+            docker push ghcr.io/angusll/commission_calculator:latest
