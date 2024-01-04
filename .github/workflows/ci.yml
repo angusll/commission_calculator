@@ -2,6 +2,10 @@ name: CI
 
 on: [push]
 
+env:
+  CR_REPO: ghcr.io/angusll/commission_calculator
+  TAG: latest
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -58,5 +62,6 @@ jobs:
         password: ${{ secrets.PUBLISH_TOKEN }}
     - name: Build Docker image
       run: |
-            docker build . -t ghcr.io/angusll/commission_calculator:latest
-            docker push ghcr.io/angusll/commission_calculator:latest
+            docker build . -t $CR_REPO:$TAG
+            docker push $CR_REPO:$TAG
+            
